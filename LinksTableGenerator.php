@@ -47,6 +47,6 @@ $ridges = [];
 
 function FindClosest($portal1, $allPortals)
 {
-	# code...
+	//there will be something
 }
 ?>
