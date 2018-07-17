@@ -44,9 +44,24 @@ foreach ($allPortals as $portal) {
 }
 //Собираем порталы в грядки
 $ridges = [];
+foreach ($outCorners as $portal) {
+	
+}
 
 function FindClosest($portal1, $allPortals)
 {
-	//there will be something
+    $minDist = -1;
+    $closestIdx = 0;
+    foreach ($allPortals as $idx => $portal2) {
+    	//находим квадрат расстояния между порталами
+    	$latD = $portal1['lat'] - $portal2['lat'];
+	    $lngD = $portal1['lng'] - $portal2['lng'];
+	    $dist = $latD*$latD + $lngD*$lngD;
+	    if ($minDist == -1 || $dist < $minDist) {
+			$minIdx = $idx;
+			$minDist = $dist;
+		}
+    }
+    return $minIdx;
 }
 ?>
