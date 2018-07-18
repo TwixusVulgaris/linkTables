@@ -45,14 +45,14 @@ foreach ($allPortals as $portal) {
 //Собираем порталы в грядки
 $ridges = [];
 foreach ($outCorners as $portal) {
-	$ridge = [];
+	$ridge = [$portal];
 	$findNext = true;
 	while ($findNext) {
 	    $closestIdx = FindClosest($portal, $allPortals);
 	    if ($allPortals[$closestIdx]['lat'] != 0 && $allPortals[$closestIdx]['lng'] != 0) {
 	        if (!DetectLink($portal, $allPortals[$closestIdx], $allLinks)) {
-		        array_unshift($ridge, $allPortals[$closestIdx]);
 		        $portal = $allPortals[$closestIdx];
+		        array_unshift($ridge, $portal);
 		        $allPortals[$closestIdx]['lat'] = 0;
 		        $allPortals[$closestIdx]['lng'] = 0;
 	        } else {$findNext = false;}
@@ -60,6 +60,8 @@ foreach ($outCorners as $portal) {
     }
     $ridges[] = $ridge;
 }
+
+//
 
 //Находит портал, ближайший к заданному, и возвращает его индекс
 function FindClosest($portal1, $allPortals)
