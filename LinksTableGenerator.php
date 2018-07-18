@@ -29,7 +29,7 @@ foreach($drawing as $line) {
         }
 	}
 }
-//Находим внешние углы нашей матрёшки и считаем общее количество линков каждого портала
+//Находим внешние углы нашей матрёшки и параллельно считаем общее количество линков каждого портала
 foreach ($allPortals as $portal) {
 	$lnkCount = 0;
 	foreach ($allLinks as $link) {
@@ -45,9 +45,23 @@ foreach ($allPortals as $portal) {
 //Собираем порталы в грядки
 $ridges = [];
 foreach ($outCorners as $portal) {
-	
+	$ridge = [];
+	$findNext = true;
+	while ($findNext) {
+	    $closestIdx = FindClosest($portal, $allPortals);
+	    if ($allPortals[$closestIdx]['lat'] != 0 && $allPortals[$closestIdx]['lng'] != 0) {
+	        if (!DetectLink($portal, $allPortals[$closestIdx], $allLinks)) {
+		        array_unshift($ridge, $allPortals[$closestIdx]);
+		        $portal = $allPortals[$closestIdx];
+		        $allPortals[$closestIdx]['lat'] = 0;
+		        $allPortals[$closestIdx]['lng'] = 0;
+	        } else {$findNext = false;}
+        }
+    }
+    $ridges[] = $ridge;
 }
 
+//Находит портал, ближайший к заданному, и возвращает его индекс
 function FindClosest($portal1, $allPortals)
 {
     $minDist = -1;
@@ -58,10 +72,22 @@ function FindClosest($portal1, $allPortals)
 	    $lngD = $portal1['lng'] - $portal2['lng'];
 	    $dist = $latD*$latD + $lngD*$lngD;
 	    if ($minDist == -1 || $dist < $minDist) {
-			$minIdx = $idx;
+			$closestIdx = $idx;
 			$minDist = $dist;
-		}
+		} 
     }
-    return $minIdx;
+    return $closestIdx;
+}
+
+//Проверяет наличие линка между двумя порталами, возвращает true/false
+function DetectLink($portal1, $portal2, $allLinks) {
+	$linked = false;
+    foreach ($allLinks as $link) {
+    	if (($link[0] == $portal1 && $link[1] == $portal2) || ($link[0] == $portal2 && $link[1] == $portal1)) { 
+            $linked = true;
+    	}
+    	if ($linked) {break;}
+    }
+    return $linked;
 }
 ?>
