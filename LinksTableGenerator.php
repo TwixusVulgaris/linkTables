@@ -1,7 +1,8 @@
+#/usr/bin/php
 <?php
 //Настройки
 $dtFile = $adv[1];
-$bookmarksFile = $adv[2];
+//$bookmarksFile = $adv[2];
 
 $allPortals = [];
 $allLinks = [];
@@ -60,7 +61,7 @@ foreach ($outCorners as $portal) {
     }
     $ridges[] = $ridge;
 }
-
+var_dump($ridges);
 //
 
 //Находит портал, ближайший к заданному, и возвращает его индекс
