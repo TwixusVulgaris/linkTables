@@ -63,12 +63,11 @@ foreach ($outCorners as &$portal) {
     }
     $ridges[] = $ridge;
 }
-var_dump($ridges);
 //Расставляем грядки в порядке последовательности их закрытия.
 $first = -1;
 $second = -1;
 $last = -1;
-foreach ($rodges as $ridgeIdx=>$ridge) {
+foreach ($ridges as $ridgeIdx=>$ridge) {
 	if ($ridge[0]['linkCount'] == 2) {
 		$first = $ridgeIdx;
 	} elseif (count($ridge < 2)) { 
@@ -79,8 +78,13 @@ foreach ($rodges as $ridgeIdx=>$ridge) {
 		$last = $ridgeIdx;
 	} else {$second = $ridgeIdx;} 
 }
-echo "Sorted\n";
-var_dump($ridges);
+$ridgesSorted = [];
+$ridgesSorted[] = $ridges[$first];
+$ridgesSorted[] = $ridges[$second];
+$ridgesSorted[] = $ridges[$last];
+unset($ridges);
+
+
 //Находит портал, ближайший к заданному, и возвращает его индекс
 function FindClosest($portal1, $allPortals)
 {
@@ -111,7 +115,6 @@ function DetectLink($portal1, $portal2, $allLinks) {
     	}
     	if ($linked) {break;}
     }
-    var_dump($linked);
     return $linked;
 }
 ?>
