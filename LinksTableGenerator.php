@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 //Настройки
-$dtFile = 'probe_dt_export1.txt';
+$dtFile = 'dt.txt';
 //$bookmarksFile = $adv[2];
 
 $allPortals = [];
@@ -43,37 +43,44 @@ foreach ($allPortals as &$portal) {
 		$outCorners[] = $portal;
 		$portal['lat'] = 0;
 		$portal['lng'] = 0;
-		var_dump($portal);
 	}
 }
-var_dump($outCorners);
-//var_dump($allPortals);
 //Собираем порталы в грядки
 $ridges = [];
-foreach ($outCorners as $portal) {
+foreach ($outCorners as &$portal) {
 	$ridge = [$portal];
 	$findNext = true;
 	while ($findNext) {
-		echo "while\n";
 	    $closestIdx = FindClosest($portal, $allPortals);
-	    var_dump($closestIdx);
 	    if ($allPortals[$closestIdx]['lat'] != 0 && $allPortals[$closestIdx]['lng'] != 0) {
-	    	echo "Detecting\n";
 	        if (!DetectLink($portal, $allPortals[$closestIdx], $allLinks)) {
 		        $portal = $allPortals[$closestIdx];
 		        array_unshift($ridge, $portal);
 		        $allPortals[$closestIdx]['lat'] = 0;
 		        $allPortals[$closestIdx]['lng'] = 0;
 	        } else {$findNext = false;} 
-	        var_dump($findNext);
-	        var_dump($ridge);
-        } 
+        } else {$findNext = false;}
     }
     $ridges[] = $ridge;
 }
 var_dump($ridges);
-//
-
+//Расставляем грядки в порядке последовательности их закрытия.
+$first = -1;
+$second = -1;
+$last = -1;
+foreach ($rodges as $ridgeIdx=>$ridge) {
+	if ($ridge[0]['linkCount'] == 2) {
+		$first = $ridgeIdx;
+	} elseif (count($ridge < 2)) { 
+		if ($last == -1) {
+			$last = $ridgeIdx; 
+		} else {$second = $ridgeIdx;}
+	} elseif ($ridge[count($ridge) - 1]['linkCount'] == 2) {
+		$last = $ridgeIdx;
+	} else {$second = $ridgeIdx;} 
+}
+echo "Sorted\n";
+var_dump($ridges);
 //Находит портал, ближайший к заданному, и возвращает его индекс
 function FindClosest($portal1, $allPortals)
 {
