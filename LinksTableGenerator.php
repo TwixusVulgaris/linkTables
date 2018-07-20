@@ -64,13 +64,13 @@ $first = -1;
 $second = -1;
 $last = -1;
 foreach ($ridges as $ridgeIdx=>$ridge) {
-	if ($ridge[0]['linkCount'] == 2) {
+	if (LinkCount($ridge[0]) == 2) {
 		$first = $ridgeIdx;
-	} elseif (count($ridge < 2)) { 
+	} elseif (count($ridge) < 2) { 
 		if ($last == -1) {
 			$last = $ridgeIdx; 
 		} else {$second = $ridgeIdx;}
-	} elseif ($ridge[count($ridge) - 1]['linkCount'] == 2) {
+	} elseif (LinkCount($ridge[count($ridge) - 1]) == 2) {
 		$last = $ridgeIdx;
 	} else {$second = $ridgeIdx;} 
 }
@@ -126,14 +126,26 @@ function FindClosest($portal1, $allPortals)
 function DetectLink($portal1, $portal2, $allLinks) {
 	$linked = false;
     foreach ($allLinks as $link) {
-    	//var_dump($link);
-    	//var_dump($portal1);
-    	//var_dump($portal2);
-    	if (($link[0]['lat'] == $portal1['lat'] && $link[0]['lng'] == $portal1['lng'] && $link[1]['lat'] == $portal2['lat'] && $link[1]['lng'] == $portal2['lng']) || ($link[1]['lat'] == $portal1['lat'] && $link[1]['lng'] == $portal1['lng'] && $link[0]['lat'] == $portal2['lat'] && $link[0]['lng'] == $portal2['lng'])) { 
+    	if (($link[0] == $portal1 && $link[1] == $portal2) || ($link[1] == $portal1 && $link[0] == $portal2)) { 
             $linked = true;
     	}
     	if ($linked) {break;}
     }
     return $linked;
+}
+
+function LinkCount($portal, $allLinks) {
+    $count = 0;
+    foreach ($allLinks as $link) {
+    	if ($link[0] == $portal || $link[1] == $portal) {
+    		$count++;
+    	}
+    }
+    return $count;
+}
+
+//Принимает массив линков, и выгружает в csv
+function ExportTable($linksTable) {
+	//some code
 }
 ?>
