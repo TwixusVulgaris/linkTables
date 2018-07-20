@@ -31,14 +31,8 @@ foreach($drawing as $line) {
 	}
 }
 
-//Находим внешние углы нашей матрёшки и параллельно считаем общее количество линков каждого портала
+//Находим внешние углы нашей матрёшки
 foreach ($allPortals as &$portal) {
-	$lnkCount = 0;
-	foreach ($allLinks as $link) {
-		if ($link[0] == $portal || $link[1] == $portal) {$lnkCount++;}
-	}
-	$portal['linkCount'] = $lnkCount;
-	$portal['linkCountO'] = 0;
 	if ($portal['lng'] == $minX || $portal['lng'] == $maxX || $portal['lat'] == $minY || $portal['lat'] == $maxY) {
 	    //var_dump($portal);
 		$outCorners[] = $portal;
@@ -46,6 +40,7 @@ foreach ($allPortals as &$portal) {
 		$portal['lng'] = 0;
 	}
 }
+
 //Собираем порталы в грядки
 $ridges = [];
 foreach ($outCorners as &$portal) {
@@ -79,66 +74,33 @@ foreach ($ridges as $ridgeIdx=>$ridge) {
 		$last = $ridgeIdx;
 	} else {$second = $ridgeIdx;} 
 }
-$ridgesSorted = [];
-$ridgesSorted[] = $ridges[$first];
-$ridgesSorted[] = $ridges[$second];
-$ridgesSorted[] = $ridges[$last];
+$ridgesOrdered = [];
+$ridgesOrdered[] = $ridges[$first];
+$ridgesOrdered[] = $ridges[$second];
+$ridgesOrdered[] = $ridges[$last];
 unset($ridges);
 
 //Формируем массив линков, из которого в конце будем выгружать в csv
+//Закрываем самое внутреннее поле.
 $linksTable = [];
-$linksTable[] = [$ridgesSorted[2][0], $ridgesSorted[1][0]];
-$ridgesSorted[2][0]['linkCountO']++;
-$linksTable[] = [$ridgesSorted[1][0], $ridgesSorted[0][0]];
-$ridgesSorted[1][0]['linkCountO']++;
-$linksTable[] = [$ridgesSorted[0][0], $ridgesSorted[2][0]];
-$ridgesSorted[0][0]['linkCountO']++;
+$linksTable[] = [$ridgesOrdered[2][0], $ridgesOrdered[1][0]];
+$linksTable[] = [$ridgesOrdered[1][0], $ridgesOrdered[0][0]];
+$linksTable[] = [$ridgesOrdered[0][0], $ridgesOrdered[2][0]];
+//Создаём и наполняем массив, хранящий для каждой грядки опорники, с которых на неё идёт линковка
 $bases = [];
-$bases[] = [$ridgesSorted[1][0], $ridgesSorted[2][0]]
+$bases[] = [$ridgesOrdered[1][0], $ridgesOrdered[2][0]];
+$bases[] = [$ridgesOrdered[2][0], $ridgesOrdered[0][count($ridgesOrdered[0]) - 1]];
+$bases[] = [$ridgesOrdered[0][count($ridgesOrdered[0]) - 1], $ridgesOrdered[1][count($ridgesOrdered[0]) - 1]];
+//Собственно, формируем остальную таблицу линков.
 for ($i=0; $i < 3; $i++) { 
-    echo "i = $i\n";
-	switch ($i) {
-		case 0:
-			for ($j=1; $j < count($ridgesSorted[$i]); $j++) { 
-				$linksTable[] = [$ridgesSorted[1][0], $ridgesSorted[$i][$j]];
-				$ridgesSorted[1][0]['linkCountO']++;
-			}
-			for ($j=1; $j < count($ridgesSorted[$i]); $j++) { 
-				$linksTable[] = [$ridgesSorted[2][0], $ridgesSorted[$i][$j]];
-				$ridgesSorted[2][0]['linkCountO']++;
-			}
-			break;
-		
-		case 1:
-			if (count($ridgesSorted[$i]) > 1) {
-			    for ($j=1; $j < count($ridgesSorted[$i]); $j++) { 
-				    $linksTable[] = [$ridgesSorted[0][count($ridgesSorted[0]) - 1], $ridgesSorted[$i][$j]];
-				    $ridgesSorted[0][count($ridgesSorted[0]) - 1]['linkCountO']++;
-			    }
-			    for ($j=1; $j < count($ridgesSorted[$i]); $j++) { 
-				    $linksTable[] = [$ridgesSorted[2][0], $ridgesSorted[$i][$j]];
-				    $ridgesSorted[2][0]['linkCountO']++;
-			    }
-			}
-			break;
-		
-		case 2:
-			if (count($ridgesSorted[$i]) > 1) {
-			    for ($j=1; $j < count($ridgesSorted[$i]); $j++) { 
-				    $linksTable[] = [$ridgesSorted[0][count($ridgesSorted[0]) - 1], $ridgesSorted[$i][$j]];
-				    $ridgesSorted[0][count($ridgesSorted[0]) - 1]['linkCountO']++;
-			    }
-			    for ($j=1; $j < count($ridgesSorted[$i]); $j++) { 
-				    $linksTable[] = [$ridgesSorted[1][count($ridgesSorted[1]) - 1], $ridgesSorted[$i][$j]];
-				    $ridgesSorted[1][count($ridgesSorted[1]) - 1]['linkCountO']++;
-			    }
-			}
-			break;
-		
-		default:
-			break;
+	for ($j=1; $j < count($ridgesOrdered[$i]); $j++) { 
+		$linksTable[] = [$bases[$i][0], $ridgesOrdered[$i][$j]];
+	}
+	for ($j=1; $j < count($ridgesOrdered[$i]); $j++) { 
+		$linksTable[] = [$bases[$i][1], $ridgesOrdered[$i][$j]];
 	}
 }
+
 var_dump($linksTable);
 
 
