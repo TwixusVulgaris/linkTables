@@ -38,6 +38,7 @@ foreach ($allPortals as &$portal) {
 		if ($link[0] == $portal || $link[1] == $portal) {$lnkCount++;}
 	}
 	$portal['linkCount'] = $lnkCount;
+	$portal['linkCountO'] = 0;
 	if ($portal['lng'] == $minX || $portal['lng'] == $maxX || $portal['lat'] == $minY || $portal['lat'] == $maxY) {
 	    //var_dump($portal);
 		$outCorners[] = $portal;
@@ -83,6 +84,62 @@ $ridgesSorted[] = $ridges[$first];
 $ridgesSorted[] = $ridges[$second];
 $ridgesSorted[] = $ridges[$last];
 unset($ridges);
+
+//Формируем массив линков, из которого в конце будем выгружать в csv
+$linksTable = [];
+$linksTable[] = [$ridgesSorted[2][0], $ridgesSorted[1][0]];
+$ridgesSorted[2][0]['linkCountO']++;
+$linksTable[] = [$ridgesSorted[1][0], $ridgesSorted[0][0]];
+$ridgesSorted[1][0]['linkCountO']++;
+$linksTable[] = [$ridgesSorted[0][0], $ridgesSorted[2][0]];
+$ridgesSorted[0][0]['linkCountO']++;
+$bases = [];
+$bases[] = [$ridgesSorted[1][0], $ridgesSorted[2][0]]
+for ($i=0; $i < 3; $i++) { 
+    echo "i = $i\n";
+	switch ($i) {
+		case 0:
+			for ($j=1; $j < count($ridgesSorted[$i]); $j++) { 
+				$linksTable[] = [$ridgesSorted[1][0], $ridgesSorted[$i][$j]];
+				$ridgesSorted[1][0]['linkCountO']++;
+			}
+			for ($j=1; $j < count($ridgesSorted[$i]); $j++) { 
+				$linksTable[] = [$ridgesSorted[2][0], $ridgesSorted[$i][$j]];
+				$ridgesSorted[2][0]['linkCountO']++;
+			}
+			break;
+		
+		case 1:
+			if (count($ridgesSorted[$i]) > 1) {
+			    for ($j=1; $j < count($ridgesSorted[$i]); $j++) { 
+				    $linksTable[] = [$ridgesSorted[0][count($ridgesSorted[0]) - 1], $ridgesSorted[$i][$j]];
+				    $ridgesSorted[0][count($ridgesSorted[0]) - 1]['linkCountO']++;
+			    }
+			    for ($j=1; $j < count($ridgesSorted[$i]); $j++) { 
+				    $linksTable[] = [$ridgesSorted[2][0], $ridgesSorted[$i][$j]];
+				    $ridgesSorted[2][0]['linkCountO']++;
+			    }
+			}
+			break;
+		
+		case 2:
+			if (count($ridgesSorted[$i]) > 1) {
+			    for ($j=1; $j < count($ridgesSorted[$i]); $j++) { 
+				    $linksTable[] = [$ridgesSorted[0][count($ridgesSorted[0]) - 1], $ridgesSorted[$i][$j]];
+				    $ridgesSorted[0][count($ridgesSorted[0]) - 1]['linkCountO']++;
+			    }
+			    for ($j=1; $j < count($ridgesSorted[$i]); $j++) { 
+				    $linksTable[] = [$ridgesSorted[1][count($ridgesSorted[1]) - 1], $ridgesSorted[$i][$j]];
+				    $ridgesSorted[1][count($ridgesSorted[1]) - 1]['linkCountO']++;
+			    }
+			}
+			break;
+		
+		default:
+			break;
+	}
+}
+var_dump($linksTable);
 
 
 //Находит портал, ближайший к заданному, и возвращает его индекс
