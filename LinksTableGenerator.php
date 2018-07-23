@@ -59,17 +59,18 @@ foreach ($outCorners as &$portal) {
     $ridges[] = $ridge;
 }
 //Расставляем грядки в порядке последовательности их закрытия.
+
 $first = -1;
 $second = -1;
 $last = -1;
 foreach ($ridges as $ridgeIdx=>$ridge) {
-	if (LinkCount($ridge[0]) == 2) {
+	if (LinkCount($ridge[0], $allLinks) == 2) {
 		$first = $ridgeIdx;
 	} elseif (count($ridge) < 2) { 
 		if ($last == -1) {
 			$last = $ridgeIdx; 
 		} else {$second = $ridgeIdx;}
-	} elseif (LinkCount($ridge[count($ridge) - 1]) == 2) {
+	} elseif (LinkCount($ridge[count($ridge) - 1], $allLinks) == 2) {
 		$last = $ridgeIdx;
 	} else {$second = $ridgeIdx;} 
 }
@@ -77,7 +78,7 @@ $ridgesOrdered = [];
 $ridgesOrdered[] = $ridges[$first];
 $ridgesOrdered[] = $ridges[$second];
 $ridgesOrdered[] = $ridges[$last];
-unset($ridges);
+//unset($ridges);
 
 //Формируем массив линков, из которого в конце будем выгружать в csv
 //Закрываем самое внутреннее поле.
@@ -100,8 +101,8 @@ for ($i=0; $i < 3; $i++) {
 	}
 }
 
-var_dump($linksTable);
-
+//var_dump($linksTable);
+ExportTable($linksTable);
 
 //Находит портал, ближайший к заданному, и возвращает его индекс
 function FindClosest($portal1, $allPortals)
@@ -133,6 +134,7 @@ function DetectLink($portal1, $portal2, $allLinks) {
     return $linked;
 }
 
+//Подсчитывает количество линков с участием заданного портала
 function LinkCount($portal, $allLinks) {
     $count = 0;
     foreach ($allLinks as $link) {
@@ -148,14 +150,14 @@ function ExportTable($linksTable) {
 	$handle = fopen('linktable.csv', 'w');
 	$header = ['Номер линка', 'Грядка', 'Портал', 'Ссылка', 'Грядка', 'Портал', 'Ссылка'];
 	fputcsv($handle, $header, ',', '"');
-	foreach ($linksTable as $link) {
+	foreach ($linksTable as $idx=>$link) {
+		$linkNumper = $idx + 1;
 		$srcLnk = "https://ingress.com/intel?ll=".$link[0]['lat'].",".$link[0]['lng']."&z=17&pll=".$link[0]['lat'].",".$link[0]['lng'];
 		$dstLnk = "https://ingress.com/intel?ll=".$link[1]['lat'].",".$link[1]['lng']."&z=17&pll=".$link[1]['lat'].",".$link[1]['lng'];
-		$row = ['', '', link[0]['title'], $srcLnk, '', link[0]['title'], $dstLnk];
+		$row = [$linkNumber, '', $link[0]['title'], $srcLnk, '', $link[0]['title'], $dstLnk];
+		//var_dump($row);
 		fputcsv($handle, $row, ',', '"');
 	}
 	fclose($handle);
 
 }
-?>
-https://ingress.com/intel?ll=55.873774,37.534617&z=17&pll=55.873774,37.534617
