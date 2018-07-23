@@ -78,7 +78,7 @@ $ridgesOrdered = [];
 $ridgesOrdered[] = $ridges[$first];
 $ridgesOrdered[] = $ridges[$second];
 $ridgesOrdered[] = $ridges[$last];
-//unset($ridges);
+unset($ridges);
 
 //Формируем массив линков, из которого в конце будем выгружать в csv
 //Закрываем самое внутреннее поле.
@@ -101,7 +101,7 @@ for ($i=0; $i < 3; $i++) {
 	}
 }
 
-//var_dump($linksTable);
+
 ExportTable($linksTable);
 
 //Находит портал, ближайший к заданному, и возвращает его индекс
@@ -151,11 +151,10 @@ function ExportTable($linksTable) {
 	$header = ['Номер линка', 'Грядка', 'Портал', 'Ссылка', 'Грядка', 'Портал', 'Ссылка'];
 	fputcsv($handle, $header, ',', '"');
 	foreach ($linksTable as $idx=>$link) {
-		$linkNumper = $idx + 1;
+		$linkNumber = $idx + 1;
 		$srcLnk = "https://ingress.com/intel?ll=".$link[0]['lat'].",".$link[0]['lng']."&z=17&pll=".$link[0]['lat'].",".$link[0]['lng'];
 		$dstLnk = "https://ingress.com/intel?ll=".$link[1]['lat'].",".$link[1]['lng']."&z=17&pll=".$link[1]['lat'].",".$link[1]['lng'];
 		$row = [$linkNumber, '', $link[0]['title'], $srcLnk, '', $link[1]['title'], $dstLnk];
-		//var_dump($row);
 		fputcsv($handle, $row, ',', '"');
 	}
 	fclose($handle);
