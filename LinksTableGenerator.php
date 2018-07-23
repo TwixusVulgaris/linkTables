@@ -100,9 +100,16 @@ for ($i=0; $i < 3; $i++) {
 		$linksTable[] = [$bases[$i][1], $ridgesOrdered[$i][$j]];
 	}
 }
+//Посчитаем потребное количество ключей от каждого портала
+foreach ($ridgesOrdered as &$portal) {
+	$inboundLinks = LinkCount($portal, $linksTable, 'in');
+	$outboundLinks = LinkCount($portal, $linksTable, 'out');
+	$portal['keys'] = $inboundLinks;
+	$portal['linksOut'] = $outboundLinks;
+}
 
 
-ExportTable($linksTable);
+ExportTable($linksTable, $ridgesOrdered);
 
 //Находит портал, ближайший к заданному, и возвращает его индекс
 function FindClosest($portal1, $allPortals)
@@ -135,18 +142,38 @@ function DetectLink($portal1, $portal2, $allLinks) {
 }
 
 //Подсчитывает количество линков с участием заданного портала
-function LinkCount($portal, $allLinks) {
+function LinkCount($portal, $allLinks, $direction) {
     $count = 0;
-    foreach ($allLinks as $link) {
-    	if ($link[0] == $portal || $link[1] == $portal) {
-    		$count++;
-    	}
+    switch ($direction) {
+    	case 'in':
+            foreach ($allLinks as $link) {
+    	        if ($link[1] == $portal) {
+        		$count++;
+        	    }
+            }
+    		break;
+
+    	case 'out':
+            foreach ($allLinks as $link) {
+    	        if ($link[0] == $portal) {
+        		$count++;
+        	    }
+            }
+    		break;
+    	
+    	default:
+            foreach ($allLinks as $link) {
+    	        if ($link[0] == $portal || $link[1] == $portal) {
+    		    $count++;
+    	        }
+            }
+    		break;
     }
     return $count;
 }
 
-//Принимает массив линков, и выгружает в csv
-function ExportTable($linksTable) {
+//Принимает массив линков и массив порталов, и выгружает в csv таблицу линковки и количество ключей для каждого из порталов + количество SBUL, которые нужно установить в каждый из опорников
+function ExportTable($linksTable, $ridges) {
 	$handle = fopen('linktable.csv', 'w');
 	$header = ['Номер линка', 'Грядка', 'Портал', 'Ссылка', 'Грядка', 'Портал', 'Ссылка'];
 	fputcsv($handle, $header, ',', '"');
@@ -157,6 +184,14 @@ function ExportTable($linksTable) {
 		$row = [$linkNumber, '', $link[0]['title'], $srcLnk, '', $link[1]['title'], $dstLnk];
 		fputcsv($handle, $row, ',', '"');
 	}
+	$header = ['Портал', 'Ключей', 'SBUL'];
+	fputcsv($handle, $header, ',', '"');
+	foreach ($ridges as $ridge) {
+		foreach ($ridge as $portal) {
+			$sbulNeeded = int_div($portal['linksOut'] - 1, 8);
+			$row = [$portal['title'], $portal['keys'], $sbulNeeded];
+			fputcsv($handle, $row, ',', '"');
+		}
+	}
 	fclose($handle);
-
 }
