@@ -154,7 +154,7 @@ function ExportTable($linksTable) {
 		$linkNumper = $idx + 1;
 		$srcLnk = "https://ingress.com/intel?ll=".$link[0]['lat'].",".$link[0]['lng']."&z=17&pll=".$link[0]['lat'].",".$link[0]['lng'];
 		$dstLnk = "https://ingress.com/intel?ll=".$link[1]['lat'].",".$link[1]['lng']."&z=17&pll=".$link[1]['lat'].",".$link[1]['lng'];
-		$row = [$linkNumber, '', $link[0]['title'], $srcLnk, '', $link[0]['title'], $dstLnk];
+		$row = [$linkNumber, '', $link[0]['title'], $srcLnk, '', $link[1]['title'], $dstLnk];
 		//var_dump($row);
 		fputcsv($handle, $row, ',', '"');
 	}
