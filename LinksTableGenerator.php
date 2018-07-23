@@ -90,7 +90,7 @@ $linksTable[] = [$ridgesOrdered[0][0], $ridgesOrdered[2][0]];
 $bases = [];
 $bases[] = [$ridgesOrdered[1][0], $ridgesOrdered[2][0]];
 $bases[] = [$ridgesOrdered[2][0], $ridgesOrdered[0][count($ridgesOrdered[0]) - 1]];
-$bases[] = [$ridgesOrdered[0][count($ridgesOrdered[0]) - 1], $ridgesOrdered[1][count($ridgesOrdered[0]) - 1]];
+$bases[] = [$ridgesOrdered[0][count($ridgesOrdered[0]) - 1], $ridgesOrdered[1][count($ridgesOrdered[1]) - 1]];
 //Собственно, формируем остальную таблицу линков.
 for ($i=0; $i < 3; $i++) { 
 	for ($j=1; $j < count($ridgesOrdered[$i]); $j++) { 
