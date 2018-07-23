@@ -101,11 +101,13 @@ for ($i=0; $i < 3; $i++) {
 	}
 }
 //Посчитаем потребное количество ключей от каждого портала
-foreach ($ridgesOrdered as &$portal) {
-	$inboundLinks = LinkCount($portal, $linksTable, 'in');
-	$outboundLinks = LinkCount($portal, $linksTable, 'out');
-	$portal['keys'] = $inboundLinks;
-	$portal['linksOut'] = $outboundLinks;
+foreach ($ridgesOrdered as &$ridge) {
+	foreach ($ridge as &$portal) {
+    	$inboundLinks = LinkCount($portal, $linksTable, 'in');
+	    $outboundLinks = LinkCount($portal, $linksTable, 'out');
+	    $portal['keys'] = $inboundLinks;
+	    $portal['linksOut'] = $outboundLinks;
+	}
 }
 
 
@@ -142,7 +144,7 @@ function DetectLink($portal1, $portal2, $allLinks) {
 }
 
 //Подсчитывает количество линков с участием заданного портала
-function LinkCount($portal, $allLinks, $direction) {
+function LinkCount($portal, $allLinks, $direction = 'all') {
     $count = 0;
     switch ($direction) {
     	case 'in':
@@ -188,7 +190,7 @@ function ExportTable($linksTable, $ridges) {
 	fputcsv($handle, $header, ',', '"');
 	foreach ($ridges as $ridge) {
 		foreach ($ridge as $portal) {
-			$sbulNeeded = int_div($portal['linksOut'] - 1, 8);
+			$sbulNeeded = intdiv($portal['linksOut'] - 1, 8);
 			$row = [$portal['title'], $portal['keys'], $sbulNeeded];
 			fputcsv($handle, $row, ',', '"');
 		}
