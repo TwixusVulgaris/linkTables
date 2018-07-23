@@ -84,8 +84,8 @@ unset($ridges);
 //Закрываем самое внутреннее поле.
 $linksTable = [];
 $linksTable[] = [$ridgesOrdered[2][0], $ridgesOrdered[1][0]];
+$linksTable[] = [$ridgesOrdered[2][0], $ridgesOrdered[0][0]];
 $linksTable[] = [$ridgesOrdered[1][0], $ridgesOrdered[0][0]];
-$linksTable[] = [$ridgesOrdered[0][0], $ridgesOrdered[2][0]];
 //Создаём и наполняем массив, хранящий для каждой грядки опорники, с которых на неё идёт линковка
 $bases = [];
 $bases[] = [$ridgesOrdered[1][0], $ridgesOrdered[2][0]];
@@ -186,6 +186,7 @@ function ExportTable($linksTable, $ridges) {
 		$row = [$linkNumber, '', $link[0]['title'], $srcLnk, '', $link[1]['title'], $dstLnk];
 		fputcsv($handle, $row, ',', '"');
 	}
+	fputcsv($handle, ['', ''], ',', '"');
 	$header = ['Портал', 'Ключей', 'SBUL'];
 	fputcsv($handle, $header, ',', '"');
 	foreach ($ridges as $ridge) {
