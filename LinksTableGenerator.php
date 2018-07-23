@@ -145,6 +145,17 @@ function LinkCount($portal, $allLinks) {
 
 //Принимает массив линков, и выгружает в csv
 function ExportTable($linksTable) {
-	//some code
+	$handle = fopen('linktable.csv', 'w');
+	$header = ['Номер линка', 'Грядка', 'Портал', 'Ссылка', 'Грядка', 'Портал', 'Ссылка'];
+	fputcsv($handle, $header, ',', '"');
+	foreach ($linksTable as $link) {
+		$srcLnk = "https://ingress.com/intel?ll=".$link[0]['lat'].",".$link[0]['lng']."&z=17&pll=".$link[0]['lat'].",".$link[0]['lng'];
+		$dstLnk = "https://ingress.com/intel?ll=".$link[1]['lat'].",".$link[1]['lng']."&z=17&pll=".$link[1]['lat'].",".$link[1]['lng'];
+		$row = ['', '', link[0]['title'], $srcLnk, '', link[0]['title'], $dstLnk];
+		fputcsv($handle, $row, ',', '"');
+	}
+	fclose($handle);
+
 }
 ?>
+https://ingress.com/intel?ll=55.873774,37.534617&z=17&pll=55.873774,37.534617
