@@ -34,7 +34,6 @@ foreach($drawing as $line) {
 //Находим внешние углы нашей матрёшки
 foreach ($allPortals as &$portal) {
 	if ($portal['lng'] == $minX || $portal['lng'] == $maxX || $portal['lat'] == $minY || $portal['lat'] == $maxY) {
-	    //var_dump($portal);
 		$outCorners[] = $portal;
 		$portal['lat'] = 0;
 		$portal['lng'] = 0;
