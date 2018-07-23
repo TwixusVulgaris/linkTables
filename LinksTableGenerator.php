@@ -100,6 +100,7 @@ for ($i=0; $i < 3; $i++) {
 		$linksTable[] = [$bases[$i][1], $ridgesOrdered[$i][$j]];
 	}
 }
+
 //Посчитаем потребное количество ключей от каждого портала
 foreach ($ridgesOrdered as &$ridge) {
 	foreach ($ridge as &$portal) {
@@ -109,9 +110,9 @@ foreach ($ridgesOrdered as &$ridge) {
 	    $portal['linksOut'] = $outboundLinks;
 	}
 }
-
-
+//Выгрузим всё в csv
 ExportTable($linksTable, $ridgesOrdered);
+
 
 //Находит портал, ближайший к заданному, и возвращает его индекс
 function FindClosest($portal1, $allPortals)
