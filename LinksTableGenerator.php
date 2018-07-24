@@ -114,11 +114,14 @@ foreach ($ridgesOrdered as &$ridge) {
 //Читаем json из файла
 $bookmarks = json_decode(file_get_contents($bookmarksFile), true);
 var_dump($bookmarks);
+$portalData = [];
 foreach ($bookmarks['portals'] as $ridge) {
-	foreach ($ridge['bkmrk'] as $portalsArr) {
-		# code...
+	foreach ($ridge['bkmrk'] as $key=>$portal) {
+		$keys = explode(',', $portal['latlng']);
+        $portalData[$keys[0]][$keys[1]] = [$ridge['label'], $portal['label']];
 	}
 }
+var_dump($portalData);
 //Выгрузим всё в csv
 //ExportTable($linksTable, $ridgesOrdered);
 
