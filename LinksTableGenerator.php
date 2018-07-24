@@ -2,7 +2,7 @@
 <?php
 //Настройки
 $dtFile = 'dt.txt';
-//$bookmarksFile = $adv[2];
+$bookmarksFile = 'bookmarks.txt';
 
 $allPortals = [];
 $allLinks = [];
@@ -110,8 +110,17 @@ foreach ($ridgesOrdered as &$ridge) {
 	    $portal['linksOut'] = $outboundLinks;
 	}
 }
+//Обрабатываем Bookmarks добавляем название грядки и, если надо, название портала
+//Читаем json из файла
+$bookmarks = json_decode(file_get_contents($bookmarksFile), true);
+var_dump($bookmarks);
+foreach ($bookmarks['portals'] as $ridge) {
+	foreach ($ridge['bkmrk'] as $portalsArr) {
+		# code...
+	}
+}
 //Выгрузим всё в csv
-ExportTable($linksTable, $ridgesOrdered);
+//ExportTable($linksTable, $ridgesOrdered);
 
 
 //Находит портал, ближайший к заданному, и возвращает его индекс
