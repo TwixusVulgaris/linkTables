@@ -110,20 +110,19 @@ foreach ($ridgesOrdered as &$ridge) {
 	    $portal['linksOut'] = $outboundLinks;
 	}
 }
-//Обрабатываем Bookmarks добавляем название грядки и, если надо, название портала
+//Обрабатываем Bookmarks, берём имена порталов и названия грядок
 //Читаем json из файла
 $bookmarks = json_decode(file_get_contents($bookmarksFile), true);
-var_dump($bookmarks);
 $portalData = [];
-foreach ($bookmarks['portals'] as $ridge) {
-	foreach ($ridge['bkmrk'] as $key=>$portal) {
-		$keys = explode(',', $portal['latlng']);
-        $portalData[$keys[0]][$keys[1]] = [$ridge['label'], $portal['label']];
+foreach ($bookmarks['portals'] as $folder) {
+	foreach ($folder['bkmrk'] as $key=>$point) {
+		$keys = explode(',', $point['latlng']);
+        $portalData[$keys[0]][$keys[1]] = [$folder['label'], $point['label']];
 	}
 }
-var_dump($portalData);
+
 //Выгрузим всё в csv
-//ExportTable($linksTable, $ridgesOrdered);
+ExportTable($linksTable, $ridgesOrdered, $portalData);
 
 
 //Находит портал, ближайший к заданному, и возвращает его индекс
@@ -188,7 +187,7 @@ function LinkCount($portal, $allLinks, $direction = 'all') {
 }
 
 //Принимает массив линков и массив порталов, и выгружает в csv таблицу линковки и количество ключей для каждого из порталов + количество SBUL, которые нужно установить в каждый из опорников
-function ExportTable($linksTable, $ridges) {
+function ExportTable($linksTable, $ridges, $portalData) {
 	$handle = fopen('linktable.csv', 'w');
 	$header = ['Номер линка', 'Грядка', 'Портал', 'Ссылка', 'Грядка', 'Портал', 'Ссылка'];
 	fputcsv($handle, $header, ',', '"');
@@ -196,7 +195,13 @@ function ExportTable($linksTable, $ridges) {
 		$linkNumber = $idx + 1;
 		$srcLnk = "https://ingress.com/intel?ll=".$link[0]['lat'].",".$link[0]['lng']."&z=17&pll=".$link[0]['lat'].",".$link[0]['lng'];
 		$dstLnk = "https://ingress.com/intel?ll=".$link[1]['lat'].",".$link[1]['lng']."&z=17&pll=".$link[1]['lat'].",".$link[1]['lng'];
-		$row = [$linkNumber, '', $link[0]['title'], $srcLnk, '', $link[1]['title'], $dstLnk];
+		$srcRidge = $portalData[strval($link[0]['lat'])][strval($link[0]['lng'])][0];
+		$dstRidge = $portalData[strval($link[1]['lat'])][strval($link[1]['lng'])][0];
+		if (!array_key_exists('title', $link[0])) {
+			$link[0]['title'] = $portalData[strval($link[0]['lat'])][strval($link[0]['lng'])][1];
+			$link[1]['title'] = $portalData[strval($link[1]['lat'])][strval($link[1]['lng'])][1];
+		}
+		$row = [$linkNumber, $srcRidge, $link[0]['title'], $srcLnk, $dstRidge, $link[1]['title'], $dstLnk];
 		fputcsv($handle, $row, ',', '"');
 	}
 	fputcsv($handle, ['', ''], ',', '"');
