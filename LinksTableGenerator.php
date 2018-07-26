@@ -88,27 +88,27 @@ $linksTable[] = [$ridgesOrdered[2][0], $ridgesOrdered[1][0]];
 $linksTable[] = [$ridgesOrdered[2][0], $ridgesOrdered[0][0]];
 $linksTable[] = [$ridgesOrdered[1][0], $ridgesOrdered[0][0]];
 //Создаём и наполняем массив, хранящий для каждой грядки опорники, с которых на неё идёт линковка
-$bases = [];
-$bases[] = [$ridgesOrdered[1][0], $ridgesOrdered[2][0]];
-$bases[] = [$ridgesOrdered[2][0], $ridgesOrdered[0][count($ridgesOrdered[0]) - 1]];
-$bases[] = [$ridgesOrdered[0][count($ridgesOrdered[0]) - 1], $ridgesOrdered[1][count($ridgesOrdered[1]) - 1]];
+//$bases = [];
+//$bases[] = [$ridgesOrdered[1][0], $ridgesOrdered[2][0]];
+//$bases[] = [$ridgesOrdered[2][0], $ridgesOrdered[0][count($ridgesOrdered[0]) - 1]];
+//$bases[] = [$ridgesOrdered[0][count($ridgesOrdered[0]) - 1], $ridgesOrdered[1][count($ridgesOrdered[1]) - 1]];
 $basesT = [];
 $basesT[] = [[1, 0], [2, 0]];
 $basesT[] = [[2, 0], [0, (count($ridgesOrdered[0]) - 1)]];
 $basesT[] = [[0, (count($ridgesOrdered[0]) - 1)], [1, (count($ridgesOrdered[1]) - 1)]];
 //Собственно, формируем остальную таблицу линков.
-for ($i=0; $i < 3; $i++) { 
-	for ($j=1; $j < count($ridgesOrdered[$i]); $j++) { 
-		$linksTable[] = [$bases[$i][0], $ridgesOrdered[$i][$j]];
-	}
-	for ($j=1; $j < count($ridgesOrdered[$i]); $j++) { 
-		$linksTable[] = [$bases[$i][1], $ridgesOrdered[$i][$j]];
-	}
-}
+//for ($i=0; $i < 3; $i++) { 
+//	for ($j=1; $j < count($ridgesOrdered[$i]); $j++) { 
+//		$linksTable[] = [$bases[$i][0], $ridgesOrdered[$i][$j]];
+//	}
+//	for ($j=1; $j < count($ridgesOrdered[$i]); $j++) { 
+//		$linksTable[] = [$bases[$i][1], $ridgesOrdered[$i][$j]];
+//	}
+//}
 for ($i=0; $i < 3; $i++) { 
 	foreach ($basesT as $basePortal) {
     	for ($j=1; $j < count($ridgesOrdered[$i]); $j++) { 
-	    	$linksTable[] = [$ridgesOrdered[$basePortal[0], $basePortal[1]], $ridgesOrdered[$i][$j]];
+	    	$linksTable[] = [$ridgesOrdered[$basePortal[0]][$basePortal[1]], $ridgesOrdered[$i][$j]];
 	    }
 	}
 }
