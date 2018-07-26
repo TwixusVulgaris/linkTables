@@ -11,6 +11,7 @@ $minY = -1;
 $maxX = -1;
 $maxY = -1;
 $outCorners = [];
+$portalData = [];
 
 //Читаем джсон из файла
 $drawing = json_decode(file_get_contents($dtFile));
@@ -40,6 +41,7 @@ foreach ($allPortals as &$portal) {
 	}
 }
 
+//Формируем массив грядок
 //Собираем порталы в грядки
 $ridges = [];
 foreach ($outCorners as &$portal) {
@@ -59,7 +61,6 @@ foreach ($outCorners as &$portal) {
     $ridges[] = $ridge;
 }
 //Расставляем грядки в порядке последовательности их закрытия.
-
 $first = -1;
 $second = -1;
 $last = -1;
@@ -91,6 +92,10 @@ $bases = [];
 $bases[] = [$ridgesOrdered[1][0], $ridgesOrdered[2][0]];
 $bases[] = [$ridgesOrdered[2][0], $ridgesOrdered[0][count($ridgesOrdered[0]) - 1]];
 $bases[] = [$ridgesOrdered[0][count($ridgesOrdered[0]) - 1], $ridgesOrdered[1][count($ridgesOrdered[1]) - 1]];
+$basesT = [];
+$basesT[] = [[1, 0], [2, 0]];
+$basesT[] = [[2, 0], [0, (count($ridgesOrdered[0]) - 1)]];
+$basesT[] = [[0, (count($ridgesOrdered[0]) - 1)], [1, (count($ridgesOrdered[1]) - 1)]];
 //Собственно, формируем остальную таблицу линков.
 for ($i=0; $i < 3; $i++) { 
 	for ($j=1; $j < count($ridgesOrdered[$i]); $j++) { 
@@ -98,6 +103,13 @@ for ($i=0; $i < 3; $i++) {
 	}
 	for ($j=1; $j < count($ridgesOrdered[$i]); $j++) { 
 		$linksTable[] = [$bases[$i][1], $ridgesOrdered[$i][$j]];
+	}
+}
+for ($i=0; $i < 3; $i++) { 
+	foreach ($basesT as $basePortal) {
+    	for ($j=1; $j < count($ridgesOrdered[$i]); $j++) { 
+	    	$linksTable[] = [$ridgesOrdered[$basePortal[0], $basePortal[1]], $ridgesOrdered[$i][$j]];
+	    }
 	}
 }
 
@@ -110,10 +122,11 @@ foreach ($ridgesOrdered as &$ridge) {
 	    $portal['linksOut'] = $outboundLinks;
 	}
 }
+
 //Обрабатываем Bookmarks, берём имена порталов и названия грядок
 //Читаем json из файла
 $bookmarks = json_decode(file_get_contents($bookmarksFile), true);
-$portalData = [];
+//Извлекаем из полученной структуры нужную нам информацию
 foreach ($bookmarks['portals'] as $folder) {
 	foreach ($folder['bkmrk'] as $key=>$point) {
 		$keys = explode(',', $point['latlng']);
@@ -121,7 +134,7 @@ foreach ($bookmarks['portals'] as $folder) {
 	}
 }
 
-//Выгрузим всё в csv
+//Выгружаем всё в csv
 ExportTable($linksTable, $ridgesOrdered, $portalData);
 
 
