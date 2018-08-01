@@ -93,9 +93,10 @@ $linksTable[] = [$ridgesOrdered[1][0], $ridgesOrdered[0][0]];
 //$bases[] = [$ridgesOrdered[2][0], $ridgesOrdered[0][count($ridgesOrdered[0]) - 1]];
 //$bases[] = [$ridgesOrdered[0][count($ridgesOrdered[0]) - 1], $ridgesOrdered[1][count($ridgesOrdered[1]) - 1]];
 $basesT = [];
-$basesT[] = [[1, 0], [2, 0]];
-$basesT[] = [[2, 0], [0, (count($ridgesOrdered[0]) - 1)]];
-$basesT[] = [[0, (count($ridgesOrdered[0]) - 1)], [1, (count($ridgesOrdered[1]) - 1)]];
+$basesT[] = [[2, 0], [1, 0]];
+$basesT[] = [[1, 0], [0, (count($ridgesOrdered[0]) - 1)]];
+$basesT[] = [[0, (count($ridgesOrdered[0]) - 1)], [2, (count($ridgesOrdered[2]) - 1)]];
+var_dump($basesT);
 //Собственно, формируем остальную таблицу линков.
 //for ($i=0; $i < 3; $i++) { 
 //	for ($j=1; $j < count($ridgesOrdered[$i]); $j++) { 
@@ -106,7 +107,7 @@ $basesT[] = [[0, (count($ridgesOrdered[0]) - 1)], [1, (count($ridgesOrdered[1]) 
 //	}
 //}
 for ($i=0; $i < 3; $i++) { 
-	foreach ($basesT as $basePortal) {
+	foreach ($basesT[$i] as $basePortal) {
     	for ($j=1; $j < count($ridgesOrdered[$i]); $j++) { 
 	    	$linksTable[] = [$ridgesOrdered[$basePortal[0]][$basePortal[1]], $ridgesOrdered[$i][$j]];
 	    }
